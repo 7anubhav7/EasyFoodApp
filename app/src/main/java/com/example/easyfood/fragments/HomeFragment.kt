@@ -1,33 +1,64 @@
 package com.example.easyfood.fragments
 
+import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputBinding
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.example.easyfood.R
+import com.example.easyfood.activities.CategoryMealsActivity
+import com.example.easyfood.activities.MealActivity
+import com.example.easyfood.adapters.CategoriesAdapter
+import com.example.easyfood.adapters.MostPopularAdapter
 import com.example.easyfood.databinding.FragmentHomeBinding
 import com.example.easyfood.pojo.Meal
-import com.example.easyfood.pojo.MealList
-import com.example.easyfood.retrofit.RetrofitInstance
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.easyfood.videoModel.HomeViewModel
+import java.util.Locale.Category
+
+
+
+
+
+
+
 
 
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
+    private lateinit var homeMvvm : HomeViewModel
+    private lateinit var randomMeal:Meal
+
+    //adapter for popular items
+    private lateinit var popularItemsAdapter : MostPopularAdapter
+
+    //adapter for categories
+    private lateinit var categoriesAdapter : CategoriesAdapter
+
+    companion object{
+        const val MEAL_ID = "com.example.easyfood.fragments.idMeal"
+        const val MEAL_NAME = "com.example.easyfood.fragments.nameMeal"
+        const val MEAL_THUMB = "com.example.easyfood.fragments.thumbMeal"
+
+        //8
+        const val CATEGORY_NAME = "com.example.easyfood.fragments.categoryName"
+
+
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        homeMvvm = ViewModelProviders.of(this)[HomeViewModel::class.java]
+
+        popularItemsAdapter = MostPopularAdapter()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater, container,false)
         return binding.root
@@ -35,26 +66,106 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        homeMvvm.getRandomMeal()
+        observeRandomMeal()
+        onRandomMealClick()
 
-        RetrofitInstance.api.getRandomMeal().enqueue(object : Callback<MealList> {
-            override fun onResponse(call: Call<MealList>, response: Response<MealList>) {
-                if(response.body() != null){
-                    val randomMeal: Meal = response.body()!!.meals[0]
-                    Glide.with(this@HomeFragment)
-                        .load(randomMeal.strMealThumb)
-                        .into(binding.imgRandomMeal)
+        homeMvvm.getPopularItems()
+        observePopularItemsLiveData()
+        preparePopularItemsRecyclerView()
+        onPopularItemClick() //popular items(6)
+        
+        //for category
+        prepareCategoriesRecyclerView()
+        homeMvvm.getCategoires()
+        observeCategoriesLiveData()
+        //8
+        onCategoryClick()
 
-                }
-                else {
-                    return
-                }
-            }
 
-            override fun onFailure(call: Call<MealList>, t: Throwable) {
-                Log.d("HomeFragment",t.message.toString())
-            }
+
+    }
+
+    private fun onCategoryClick() {
+        categoriesAdapter.onItemClick = { category ->
+            val intent  = Intent(activity,CategoryMealsActivity::class.java)
+            intent.putExtra(CATEGORY_NAME,category.strCategory)
+            startActivity(intent)
+        }
+    }
+
+
+    private fun prepareCategoriesRecyclerView() {
+        categoriesAdapter = CategoriesAdapter()
+        binding.recViewCategories.apply {
+            layoutManager = GridLayoutManager(context,3,GridLayoutManager.VERTICAL,false)
+            adapter = categoriesAdapter
+        }
+    }
+
+    private fun observeCategoriesLiveData() {
+        homeMvvm.observeCategoriesLiveData().observe(viewLifecycleOwner,Observer{ categories->
+            categoriesAdapter.setCategoryList(categories)
+            })
+            
+    }
+
+
+
+
+    private fun onPopularItemClick() {
+        popularItemsAdapter.onItemClick = { meal->
+            val intent =Intent(activity,MealActivity::class.java)
+            intent.putExtra(MEAL_ID,meal.idMeal)
+            intent.putExtra(MEAL_NAME,meal.strMeal)
+            intent.putExtra(MEAL_THUMB,meal.strMealThumb)
+            startActivity(intent)
+
+        }
+    }
+
+    private fun preparePopularItemsRecyclerView() {
+        binding.recViewMealsPopular.apply {
+            layoutManager = LinearLayoutManager(activity,LinearLayoutManager.HORIZONTAL,false)
+            adapter = popularItemsAdapter
+        }
+    }
+
+    private fun observePopularItemsLiveData() {
+        homeMvvm.observePopularItemsLiveData().observe(viewLifecycleOwner,
+            { mealList->
+                popularItemsAdapter.setMeals(mealsList = mealList as ArrayList<CategoryMeals>)
 
         })
     }
 
+
+
+
+    private fun onRandomMealClick() {
+      binding.randomMealCard.setOnClickListener{
+          val intent = Intent(activity,MealActivity::class.java)
+          intent.putExtra(MEAL_ID,randomMeal.idMeal)
+          intent.putExtra(MEAL_NAME,randomMeal.strMeal)
+          intent.putExtra(MEAL_THUMB,randomMeal.strMealThumb)
+          startActivity(intent)
+      }
+    }
+
+
+    private fun observeRandomMeal() {
+        homeMvvm.observeRandomMealLivedata().observe(viewLifecycleOwner, object : androidx.lifecycle.Observer<Meal>{
+            override fun onChanged(value: Meal) {
+                Glide.with(this@HomeFragment).load(value!!.strMealThumb).into(binding.imgRandomMeal)
+                //this.ramdomMeal = meal
+            }
+
+        } )
+    }
+
+
+
+
+
 }
+
