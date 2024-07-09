@@ -73,9 +73,9 @@ class HomeViewModel() : ViewModel() {
     }
 
 
-    //categories related functoins
+    //categories related functions
 
-    fun getCategoires(){
+    fun getCategories(){
         RetrofitInstance.api.getCategories().enqueue(object : Callback<CategoryList>{
             override fun onResponse(call: Call<CategoryList>, response: Response<CategoryList>) {
                 response.body()?.let { categoryList ->

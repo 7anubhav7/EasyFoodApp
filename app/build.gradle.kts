@@ -40,6 +40,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.legacy:legacy-support-v4:1.0.0")
 
     val nav_version = "2.7.7"
     val lifecycle_version = "2.4.0-rc01"
@@ -75,6 +76,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     implementation ("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
     implementation( "android.arch.lifecycle:extensions:1.1.0")
+    implementation("android.arch.lifecycle:viewmodel:1.1.0")
 
 }
 

@@ -1,5 +1,6 @@
 package com.example.easyfood.activities
 
+
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge

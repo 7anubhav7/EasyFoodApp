@@ -18,14 +18,6 @@ import com.example.easyfood.adapters.MostPopularAdapter
 import com.example.easyfood.databinding.FragmentHomeBinding
 import com.example.easyfood.pojo.Meal
 import com.example.easyfood.videoModel.HomeViewModel
-import java.util.Locale.Category
-
-
-
-
-
-
-
 
 
 class HomeFragment : Fragment() {
@@ -77,12 +69,10 @@ class HomeFragment : Fragment() {
         
         //for category
         prepareCategoriesRecyclerView()
-        homeMvvm.getCategoires()
+        homeMvvm.getCategories()
         observeCategoriesLiveData()
         //8
         onCategoryClick()
-
-
 
     }
 
@@ -109,7 +99,6 @@ class HomeFragment : Fragment() {
             })
             
     }
-
 
 
 
@@ -141,7 +130,6 @@ class HomeFragment : Fragment() {
 
 
 
-
     private fun onRandomMealClick() {
       binding.randomMealCard.setOnClickListener{
           val intent = Intent(activity,MealActivity::class.java)
@@ -154,7 +142,7 @@ class HomeFragment : Fragment() {
 
 
     private fun observeRandomMeal() {
-        homeMvvm.observeRandomMealLivedata().observe(viewLifecycleOwner, object : androidx.lifecycle.Observer<Meal>{
+        homeMvvm.observeRandomMealLivedata().observe(viewLifecycleOwner, object : Observer<Meal>{
             override fun onChanged(value: Meal) {
                 Glide.with(this@HomeFragment).load(value!!.strMealThumb).into(binding.imgRandomMeal)
                 //this.ramdomMeal = meal
@@ -162,10 +150,4 @@ class HomeFragment : Fragment() {
 
         } )
     }
-
-
-
-
-
 }
-
