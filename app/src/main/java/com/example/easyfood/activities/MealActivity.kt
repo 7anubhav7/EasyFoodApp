@@ -1,12 +1,12 @@
 package com.example.easyfood.activities
 
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.example.easyfood.R
 import com.example.easyfood.databinding.ActivityMealBinding
@@ -29,7 +29,7 @@ class MealActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(binding.root)
 
-        mealMvvm = ViewModelProviders.of(this)[MealViewModel::class.java]
+        mealMvvm = ViewModelProvider(this)[MealViewModel::class.java]
 
         getMealInformationFromIntent()
         setInformationInViews()

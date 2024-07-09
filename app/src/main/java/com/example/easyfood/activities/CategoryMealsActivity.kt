@@ -1,7 +1,5 @@
 package com.example.easyfood.activities
 
-
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -48,7 +46,7 @@ class CategoryMealsActivity : AppCompatActivity() {
 
         prepareRecyclerView()
 
-        categoryMealsViewModel = ViewModelProviders.of(this)[CategoryMealsViewModel::class.java]
+        categoryMealsViewModel = ViewModelProvider(this).get(CategoryMealsViewModel::class.java)
 
         categoryMealsViewModel.getMealsByCategory(intent.getStringExtra(HomeFragment.CATEGORY_NAME)!!)
 

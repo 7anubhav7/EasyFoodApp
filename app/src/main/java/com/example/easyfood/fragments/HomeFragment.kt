@@ -1,6 +1,6 @@
 package com.example.easyfood.fragments
 
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -17,6 +17,7 @@ import com.example.easyfood.adapters.CategoriesAdapter
 import com.example.easyfood.adapters.MostPopularAdapter
 import com.example.easyfood.databinding.FragmentHomeBinding
 import com.example.easyfood.pojo.Meal
+import com.example.easyfood.pojo.MealsByCategory
 import com.example.easyfood.videoModel.HomeViewModel
 
 
@@ -45,8 +46,7 @@ class HomeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        homeMvvm = ViewModelProviders.of(this)[HomeViewModel::class.java]
-
+        homeMvvm = ViewModelProvider(this).get(HomeViewModel::class.java)
         popularItemsAdapter = MostPopularAdapter()
     }
 
@@ -123,7 +123,7 @@ class HomeFragment : Fragment() {
     private fun observePopularItemsLiveData() {
         homeMvvm.observePopularItemsLiveData().observe(viewLifecycleOwner,
             { mealList->
-                popularItemsAdapter.setMeals(mealsList = mealList as ArrayList<CategoryMeals>)
+                popularItemsAdapter.setMeals(mealsList = mealList as ArrayList<MealsByCategory>)
 
         })
     }
