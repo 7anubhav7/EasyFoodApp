@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("kotlin-kapt")
 }
 
 android {
@@ -40,6 +41,7 @@ android {
 }
 
 dependencies {
+
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
 
     val nav_version = "2.7.7"
@@ -78,5 +80,13 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
     implementation( "android.arch.lifecycle:extensions:1.1.0")
     implementation("android.arch.lifecycle:viewmodel:1.1.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
 
+    //room
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor("androidx.room:room-compiler:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+
+    implementation("androidx.room:room-ktx:$room_version")
 }
