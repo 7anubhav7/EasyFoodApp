@@ -1,16 +1,21 @@
 package com.example.easyfood.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.easyfood.R
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
+import com.example.easyfood.activities.MainActivity
+import com.example.easyfood.adapters.FavoritesMealsAdapter
+import com.example.easyfood.databinding.FragmentFavoritesBinding
+import com.example.easyfood.videoModel.HomeViewModel
+import com.google.android.material.snackbar.Snackbar
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
@@ -18,43 +23,123 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class FavoritesFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+//     TODO: Rename and change types of parameters
+//    private var param1: String? = null
+//    private var param2: String? = null
+
+    //11
+    private lateinit var binding: FragmentFavoritesBinding
+    private lateinit var viewModel:HomeViewModel
+    private lateinit var favoritesAdapter:FavoritesMealsAdapter
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
+
+        viewModel  = (activity as MainActivity).viewModel
+
+//        arguments?.let {
+//            param1 = it.getString(ARG_PARAM1)
+//            param2 = it.getString(ARG_PARAM2)
+//        }
+
+
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_favorites, container, false)
+        // Inflate the layout for this fragment using ViewBinding
+        binding = FragmentFavoritesBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment FavoritesFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            FavoritesFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        prepareRecyclerView() //11
+        observeFavorites()
+
+
+        //12
+        val itemTouchHelper = object: ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN ,
+            ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT
+        ){
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ) = true
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
+
+
+                val position = viewHolder.adapterPosition
+                val deletedMeal = favoritesAdapter.differ.currentList.getOrNull(position)
+
+                if(deletedMeal != null){
+                    viewModel.deleteMeal(deletedMeal)
+                    Snackbar.make(requireView(),"meal deleted",Snackbar.LENGTH_LONG).setAction("UNDO"){
+                        viewModel.insertMeal(deletedMeal) }.show()
+                    }else{
+                        Toast.makeText(requireContext(),"meal not found",Toast.LENGTH_SHORT).show()
                 }
+
+
             }
+        }
+
+        ItemTouchHelper(itemTouchHelper).attachToRecyclerView(binding.rvFavorites)
+
+
     }
+
+    //11
+    private fun prepareRecyclerView() {
+        favoritesAdapter = FavoritesMealsAdapter()
+        binding.rvFavorites.apply {
+            layoutManager = GridLayoutManager(context,2,GridLayoutManager.VERTICAL,false)
+            adapter = favoritesAdapter
+        }
+    }
+
+    private fun observeFavorites() {
+        viewModel.observeFavoritesMealsLiveData().observe(requireActivity(), Observer { meals->
+          favoritesAdapter.differ.submitList(meals)
+        })
+    }
+
+
+//    companion object {
+//        /**
+//         * Use this factory method to create a new instance of
+//         * this fragment using the provided parameters.
+//         *
+//         * @param param1 Parameter 1.
+//         * @param param2 Parameter 2.
+//         * @return A new instance of fragment FavoritesFragment.
+//         */
+//        // TODO: Rename and change types and number of parameters
+//        @JvmStatic
+//        fun newInstance(param1: String, param2: String) =
+//            FavoritesFragment().apply {
+//                arguments = Bundle().apply {
+//                    putString(ARG_PARAM1, param1)
+//                    putString(ARG_PARAM2, param2)
+//                }
+//            }
+//
+//
+//    }
+
+
+
+
+
+
 }

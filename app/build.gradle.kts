@@ -81,6 +81,7 @@ dependencies {
     implementation( "android.arch.lifecycle:extensions:1.1.0")
     implementation("android.arch.lifecycle:viewmodel:1.1.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0")
 
     //room
     val room_version = "2.6.1"

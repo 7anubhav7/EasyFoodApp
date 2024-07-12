@@ -1,29 +1,34 @@
 package com.example.easyfood.videoModel
 
+// for popular items (6)
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.easyfood.db.MealDatabase
 import com.example.easyfood.pojo.Category
 import com.example.easyfood.pojo.CategoryList
-
 import com.example.easyfood.pojo.Meal
 import com.example.easyfood.pojo.MealList
+import com.example.easyfood.pojo.MealsByCategory
+import com.example.easyfood.pojo.MealsByCategoryList
 import com.example.easyfood.retrofit.RetrofitInstance
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-// for popular items (6)
-import com.example.easyfood.pojo.MealsByCategoryList
-import com.example.easyfood.pojo.MealsByCategory
 
-
-class HomeViewModel() : ViewModel() {
+class HomeViewModel(
+    private val mealDatabase:MealDatabase
+) : ViewModel() {
 
     private var randomMealLiveData = MutableLiveData<Meal>()
     private var popularItemsLiveData = MutableLiveData< List<MealsByCategory>>() //for popular items(6)
     private var categoriesLiveData = MutableLiveData< List<Category>>() //for category items(6)
+
+    private var favoriteMealsLiveData = mealDatabase.mealDao().getAllMeals() //11
 
     fun getRandomMeal(){
         RetrofitInstance.api.getRandomMeal().enqueue(object : Callback<MealList> {
@@ -92,6 +97,24 @@ class HomeViewModel() : ViewModel() {
 
     fun observeCategoriesLiveData(): LiveData<List<Category>>{
         return categoriesLiveData
+    }
+
+    //11 function to see favorites
+    fun observeFavoritesMealsLiveData():LiveData<List<Meal>>{
+        return favoriteMealsLiveData
+
+    }
+
+    fun deleteMeal(meal: Meal){
+        viewModelScope.launch {
+            mealDatabase.mealDao().delete(meal)
+        }
+    }
+
+    fun insertMeal(meal: Meal){
+        viewModelScope.launch {
+            mealDatabase.mealDao().insertMeal(meal) //
+        }
     }
 
 
