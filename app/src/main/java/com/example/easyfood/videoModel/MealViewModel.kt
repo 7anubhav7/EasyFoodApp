@@ -1,18 +1,15 @@
 package com.example.easyfood.videoModel
 
-import android.net.DnsResolver.Callback
-import android.telecom.Call
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewModelScope //this added
 import com.example.easyfood.db.MealDatabase
 import com.example.easyfood.pojo.Meal
 import com.example.easyfood.pojo.MealList
 import com.example.easyfood.retrofit.RetrofitInstance
 import kotlinx.coroutines.launch
-import okhttp3.Response
 
 class MealViewModel(
     val mealDatabase: MealDatabase
@@ -40,14 +37,21 @@ class MealViewModel(
         })
     }
 
+
     fun observeMealDetailsLiveData():LiveData<Meal>{
         return mealDetailsLiveData
     }
 
+
+
     fun insertMeal(meal: Meal){
         viewModelScope.launch {
-            mealDatabase.mealDao().delete(meal)
+            mealDatabase.mealDao().insertMeal(meal)
         }
     }
+
+
+
+
 
 }

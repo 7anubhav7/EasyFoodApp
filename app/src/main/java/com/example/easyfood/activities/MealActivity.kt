@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -34,6 +35,7 @@ class MealActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(binding.root)
 
+        //10
         val mealDatabase = MealDatabase.getInstance(this)
         val viewModelFactory = MealViewModelFactory(mealDatabase)
         mealMvvm = ViewModelProvider(this, viewModelFactory)[MealViewModel::class.java]
@@ -47,6 +49,7 @@ class MealActivity : AppCompatActivity() {
         observeMealDetailsLiveData()
 
         onYoutubeImageClick()
+        onFavouriteClick()  //10
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -55,6 +58,19 @@ class MealActivity : AppCompatActivity() {
         }
     }
 
+
+
+    //10 function to save favourite
+    private fun onFavouriteClick() {
+        binding.btnAddToFav.setOnClickListener{
+            mealToSave?.let{
+                mealMvvm.insertMeal(it)
+                Toast.makeText(this,"meal saved",Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+
     private fun onYoutubeImageClick() {
         binding.imgYoutube.setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(youtubeLink))
@@ -62,12 +78,17 @@ class MealActivity : AppCompatActivity() {
         }
     }
 
+    private var mealToSave:Meal? = null
+
+
     private fun observeMealDetailsLiveData() {
 
         mealMvvm.observeMealDetailsLiveData().observe(this, object : Observer<Meal> {
             override fun onChanged(value: Meal) {
                 onResponseCase()
                 val meal = value
+                mealToSave = meal
+
                 binding.tvCategory.text = "Category : ${meal.strCategory}"
                 binding.tvArea.text = "Area : ${meal.strArea}"
                 binding.tvInstructionsSteps.text = meal.strInstructions
