@@ -144,12 +144,13 @@ class HomeFragment : Fragment() {
 
 
     private fun observeRandomMeal() {
-        viewModel.observeRandomMealLivedata().observe(viewLifecycleOwner, object : Observer<Meal>{
-            override fun onChanged(value: Meal) {
-                Glide.with(this@HomeFragment).load(value!!.strMealThumb).into(binding.imgRandomMeal)
-                //this.ramdomMeal = meal
-            }
+        viewModel.observeRandomMealLivedata().observe(viewLifecycleOwner,
+            { meal ->
+                Glide.with(this@HomeFragment).
+                load(meal!!.strMealThumb).
+                into(binding.imgRandomMeal)
+                this.randomMeal = meal
+            })
 
-        } )
+        }
     }
-}

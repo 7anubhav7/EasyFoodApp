@@ -76,9 +76,6 @@ class FavoritesFragment : Fragment() {
             ) = true
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-
-
-
                 val position = viewHolder.adapterPosition
                 val deletedMeal = favoritesAdapter.differ.currentList.getOrNull(position)
 
@@ -90,10 +87,8 @@ class FavoritesFragment : Fragment() {
                         Toast.makeText(requireContext(),"meal not found",Toast.LENGTH_SHORT).show()
                 }
 
-
             }
         }
-
         ItemTouchHelper(itemTouchHelper).attachToRecyclerView(binding.rvFavorites)
 
 
@@ -113,33 +108,5 @@ class FavoritesFragment : Fragment() {
           favoritesAdapter.differ.submitList(meals)
         })
     }
-
-
-//    companion object {
-//        /**
-//         * Use this factory method to create a new instance of
-//         * this fragment using the provided parameters.
-//         *
-//         * @param param1 Parameter 1.
-//         * @param param2 Parameter 2.
-//         * @return A new instance of fragment FavoritesFragment.
-//         */
-//        // TODO: Rename and change types and number of parameters
-//        @JvmStatic
-//        fun newInstance(param1: String, param2: String) =
-//            FavoritesFragment().apply {
-//                arguments = Bundle().apply {
-//                    putString(ARG_PARAM1, param1)
-//                    putString(ARG_PARAM2, param2)
-//                }
-//            }
-//
-//
-//    }
-
-
-
-
-
 
 }
